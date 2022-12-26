@@ -18,7 +18,7 @@ function App() {
     // console.log(res.data.pop());
     res.data.pop();
     setSites(res.data);
-    console.log(res.data);
+    // console.log(res.data);
   };
 
   useEffect(() => {

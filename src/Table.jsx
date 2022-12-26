@@ -1,3 +1,4 @@
+//@ts-noCheck
 import * as React from "react";
 import { useEffect, useState } from "react";
 import Table from "@mui/material/Table";
@@ -17,7 +18,26 @@ export default function BasicTable(props) {
 
   const fetchContestInfo = async (contest) => {
     const res = await axios.get(`https://kontests.net/api/v1/${contest}`);
-    setAllContests(res.data);
+    let data = res.data;
+    data = data.map((value) => {
+      let d = parseInt(value.duration) / 3600;
+      if (d >= 24) {
+        d = parseInt(d / 24);
+        d = `${d} days`;
+      } else {
+        if (d % 0.5 !== 0) {
+          d = d.toFixed(2);
+        }
+        d = `${d} hours`;
+      }
+      value = { ...value, duration: d };
+      return value;
+    });
+    // console.log(data);
+    data.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
+    data.reverse();
+    // console.log(data);
+    setAllContests(data);
     // console.log(allContests);
   };
 
@@ -72,9 +92,7 @@ export default function BasicTable(props) {
                 <TableCell align="right">
                   {row.end_time.substring(11, 16)}
                 </TableCell>
-                <TableCell align="right">
-                  {parseInt(parseInt(row.duration) / 3600)} hours
-                </TableCell>
+                <TableCell align="right">{row.duration}</TableCell>
               </TableRow>
             ))}
         </TableBody>
